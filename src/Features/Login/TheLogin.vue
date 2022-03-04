@@ -1,22 +1,4 @@
 <template>
-  <base-dialog
-    v-if="inputIsInvalid"
-    title="Invalid Input"
-    @close="confirmError"
-  >
-    <template #default>
-      <p>Unfortunately, at least one input is invalid</p>
-      <p>
-        Please check all inputs and make sure you enter valid email and
-        password.
-      </p>
-    </template>
-
-    <template #actions>
-      <button @click="confirmError">Okay</button>
-    </template>
-  </base-dialog>
-
   <section>
     <div class="imgBx"></div>
     <div class="contentBx">
