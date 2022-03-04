@@ -1,158 +1,267 @@
 <template>
-    <div class="body">
-        <div class="form-align">
-     <h1>Register </h1>
-     <form @submit.prevent='handleSubmit' class="form-style">
-         <input type="text" placeholder="Enter FirstName" v-model="firstName" class="form-control form-control-lg mt-4"  />
-         <span v-show="formErrors.firstName" class="errorSpan" >{{formErrors.firstName}} </span>
-         <input type="text" placeholder="Enter LastName" v-model="lastName" class="form-control form-control-lg mt-4" />
-         <span v-show="formErrors.lastName" class="errorSpan" >{{formErrors.lastName}} </span>
-         <input type="email" placeholder="Enter Email" v-model="email" class="form-control form-control-lg mt-4"/>
-         <span v-show="formErrors.email" class="errorSpan" >{{formErrors.email}} </span>
-         <input type="text" placeholder="Enter UserName" v-model="userName" class="form-control form-control-lg mt-4" />
-         <span v-show="formErrors.userName" class="errorSpan" >{{formErrors.userName}} </span>
-         <input type="password" placeholder="Enter Password" v-model="password" class="form-control form-control-lg mt-4" />
-         <span v-show="formErrors.password" class="errorSpan" >{{formErrors.password}} </span>
-         <input type="number" placeholder="Enter Phone" v-model="phone" class="form-control form-control-lg mt-4" />
-         <span v-show="formErrors.phone" class="errorSpan" >{{formErrors.phone}} </span>
-         <input type="submit" value="Register" class="submit" />
-     </form>
-        </div>
+  <section>
+    <div class="contentBx">
+      <div class="formBx">
+        <form @submit.prevent="submitData">
+          <div class="inputBx">
+            <label for="user-name">Email</label>
+            <input
+              type="text"
+              name="user-name"
+              id="user-name"
+              v-model.trim="enteredEmail.val"
+              @blur="clearValidity('enteredEmail')"
+            />
+            <p v-if="!enteredEmail.isValid" id="warning">
+              Please Enter an email
+            </p>
+          </div>
+          <div class="inputBx">
+            <label for="user-password">Password</label>
+            <span>
+              <input
+                :type="ShowPassword"
+                maxlength="16"
+                name="user-password"
+                id="user-password"
+                v-model.trim="enteredPassword.val"
+                @blur="clearValidity('enteredPassword')" />
+              <i class="bi" :class="toggleClass" @click="togglePassword"></i
+            ></span>
+
+            <p v-if="!enteredPassword.isValid" id="warning">
+              Password must not be empty
+            </p>
+          </div>
+
+          <div class="inputBx">
+            <button>Sign up</button>
+          </div>
+        </form>
+      </div>
     </div>
+  </section>
 </template>
 
 <script>
-import { v4 as uuidv4 } from 'uuid';
+export default {
+  data() {
+    return {
+      enteredEmail: {
+        val: '',
+        isValid: true,
+      },
+      enteredPassword: {
+        val: '',
+        isValid: true,
+      },
+      showPassword: false,
 
-    export default {
-        data(){
-            return{
-                firstName:'',
-                lastName:'',
-                email:'',
-                userName:'',
-                password:'',
-                phone:'',
-                errors:{},
-                formErrors:{}
-            }
-        },
-        methods:{
-                
-            runValidation(){
-                if(this.firstName.trim().length==0){
-                    this.errors.firstName="FirstName Required"
-                }
-                if(this.lastName.trim().length==0){
-                    this.errors.lastName="LastName Required"
-                }
-                 const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                if(!re.test(String(this.email).toLowerCase())){
-                    this.errors.email="Invalid Email"
-                }
-                if(this.email.trim().length==0){
-                    this.errors.email="Email Required"
-                }
-                if(this.userName.trim().length==0){
-                    this.errors.userName="UserName Required"
-                }
-                if(this.password.length<=5 || this.password.length>=10){
-                    this.errors.password="Password Should not more than 10 and less than 5"
-                }
-                if(this.password.trim().length==0){
-                    this.errors.password="Password Required"
-                }
-                if(this.phone.length==0){
-                    this.errors.phone="Phone Number Required"
-                }
-                // if(this.phone.length<10){
-                //     this.errors.phone="Invalid Format"
-                // }
-            },
+      rememberMe: [],
+      inputIsInvalid: false,
+      formIsValid: true,
+    };
+  },
 
-            handleSubmit(){
-                this.formErrors={}
-                this.errors={}
+  computed: {
+    ShowPassword() {
+      return this.showPassword ? 'text' : 'password';
+    },
+    toggleClass() {
+      return this.showPassword ? 'bi-eye-slash' : 'bi-eye';
+    },
+  },
 
-                    this.runValidation()
+  methods: {
+    clearValidity(input) {
+      this[input].isValid = true;
+    },
 
-                if(Object.keys(this.errors).length===0){
-                    this.formErrors={}
-                    const userData={
-                    id:uuidv4(),
-                    firstName:this.firstName,
-                    lastName:this.lastName,
-                    email:this.email,
-                    userName:this.userName,
-                    password:this.password,
-                    phone:this.phone
-                }
-                console.log(userData)
-                this.$router.push('/')
+    togglePassword() {
+      return (this.showPassword = !this.showPassword);
+    },
 
-                this.firstName='',
-                this.lastName='',
-                this.email='',
-                this.userName='',
-                this.password='',
-                this.phone=''
-                }else{
-                    Object.assign(this.formErrors,this.errors)
-                }
-                
-            }
-        }
-        
-    }
+    validateForm() {
+      this.formIsValid = true;
+      if (
+        this.enteredEmail.val === '' ||
+        !this.enteredEmail.val.includes('@')
+      ) {
+        this.enteredEmail.isValid = false;
+        this.inputIsInvalid = true;
+        this.formIsValid = false;
+      }
+      if (this.enteredPassword.val === '') {
+        this.enteredPassword.isValid = false;
+        this.inputIsInvalid = true;
+        this.formIsValid = false;
+      }
+    },
+
+    submitData() {
+      this.validateForm();
+
+      if (!this.formIsValid) {
+        return;
+      }
+
+      console.log(
+        this.enteredEmail.val,
+        this.enteredPassword.val,
+        this.rememberMe
+      );
+    },
+    confirmError() {
+      this.inputIsInvalid = false;
+    },
+  },
+};
 </script>
 
-<style lang="css" scoped>
-/* .form-style{ */
-    /* border: 1px solid black; */
-    /* padding: 5px 10px; */
-    /* box-shadow: 5px 10px; */
-    /* background: whitesmoke; */
-    /* border-radius: 30px; */
-/* } */
-.submit{
-    border: 1px solid black;
-    padding: 8px;
-    width: 200px;
-    font-size: 20px;
-    margin: 20px;
-    border-radius: 25px;
-    color: white;
-     background-image: linear-gradient(to right,green , yellow);
-     /* box-shadow: 5px 5px ; */
-}
-.body, input{
-    text-align: center;
-    align-content: center;
-}
-.body{
-    /* background: rgb(166, 166, 230); */
-     background-image: linear-gradient(to bottom right, rgb(177, 135, 135), rgb(173, 42, 53));
-    height: 800px;
-    width: 100%;
-}
-.form-align{
-    width: 600PX;
-    height: 100%;
-    margin: 0 auto;
-    /* background:white;    */
-    padding: 0 20px;
-    border-radius: 30px;
-}
-h1{
-    font-family:cursive;
-    font-weight: 100;
-    color:rgba(0, 0, 0, 0.87);
-    
-}
-.errorSpan{
-    color: rgb(236, 225, 225);
-    font-size: 17px;
-    display: block;
+<style scoped>
+section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
 }
 
+section .contentBx {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.forgot-pass {
+  display: flex;
+}
+
+section .contentBx .formBx {
+  width: 25%;
+  height: 100%;
+}
+
+section .contentBx .formBx form {
+  margin-top: 50px;
+}
+
+section .contentBx .formBx .inputBx {
+  margin-bottom: 20px;
+}
+
+section .contentBx .formBx .inputBx label {
+  font-size: 16px;
+  margin-bottom: 5px;
+  display: inline-block;
+  color: #607d8b;
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+
+section .contentBx .formBx .inputBx input {
+  width: 100%;
+  padding: 10px 20px;
+  outline: none;
+  font-weight: 400;
+  border: 1px solid #607d8b;
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: #607d8b;
+  background: transparent;
+  border-radius: 30px;
+}
+
+section .contentBx .formBx .inputBx input:focus {
+  border-color: rgba(0, 208, 228, 0.5);
+  box-shadow: 0 0 4px 1px rgb(0 208 228 / 30%), 0 0 0 1px #00d0e4;
+  outline: 0;
+}
+
+section .contentBx .formBx .inputBx button {
+  width: 100%;
+  padding: 10px 20px;
+  font-size: 16px;
+  letter-spacing: 1px;
+  border-radius: 30px;
+  background: #ff45f0;
+  color: #fff;
+  outline: none;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 80ms ease-in;
+}
+
+section .contentBx .formBx .inputBx button:active {
+  transform: scale(0.95);
+}
+
+button {
+  background: #d0342c;
+  border-radius: 30px;
+  padding: 10px 20px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #fff;
+  letter-spacing: 1px;
+  transition: transform 80ms ease-in;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+section .contentBx .formBx .inputBx button:hover {
+  background: #f536d5;
+}
+
+section .contentBx .formBx .inputBx p {
+  color: #607d8b;
+}
+
+section .contentBx .formBx .inputBx p a {
+  color: #ff45f0;
+}
+
+section .contentBx .formBx h3 {
+  color: #607d8b;
+  text-align: center;
+  margin: 40px 0 10px;
+  font-weight: 500;
+}
+
+#warning {
+  color: red;
+}
+
+.bi {
+  float: right;
+  margin-right: 16px;
+  margin-top: -35px;
+  position: relative;
+  z-index: 2;
+  transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+  section .contentBx {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  section .contentBx .formBx {
+    width: 100%;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.9);
+    margin: 50px;
+  }
+}
 </style>
