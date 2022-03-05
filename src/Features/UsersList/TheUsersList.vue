@@ -10,6 +10,118 @@
           </button>
         </div>
       </header>
+
+      <div class="flexbox">
+        <div class="dropdown" data-control="checkbox-dropdown">
+          <label class="dropdown-label">Select</label>
+
+          <div class="dropdown-list">
+            <a href="#" data-toggle="check-all" class="dropdown-option">
+              Check All
+            </a>
+
+            <label class="dropdown-option">
+              <input
+                type="checkbox"
+                name="dropdown-group"
+                value="Selection 1"
+              />
+              Selection One
+            </label>
+
+            <label class="dropdown-option">
+              <input
+                type="checkbox"
+                name="dropdown-group"
+                value="Selection 2"
+              />
+              Selection Two
+            </label>
+
+            <label class="dropdown-option">
+              <input
+                type="checkbox"
+                name="dropdown-group"
+                value="Selection 3"
+              />
+              Selection Three
+            </label>
+
+            <label class="dropdown-option">
+              <input
+                type="checkbox"
+                name="dropdown-group"
+                value="Selection 4"
+              />
+              Selection Four
+            </label>
+
+            <label class="dropdown-option">
+              <input
+                type="checkbox"
+                name="dropdown-group"
+                value="Selection 5"
+              />
+              Selection Five
+            </label>
+          </div>
+        </div>
+        <div class="dropdown" data-control="checkbox-dropdown">
+          <label class="dropdown-label">Select</label>
+
+          <div class="dropdown-list">
+            <a href="#" data-toggle="check-all" class="dropdown-option">
+              Check All
+            </a>
+
+            <label class="dropdown-option">
+              <input
+                type="checkbox"
+                name="dropdown-group"
+                value="Selection 1"
+              />
+              Selection One
+            </label>
+
+            <label class="dropdown-option">
+              <input
+                type="checkbox"
+                name="dropdown-group"
+                value="Selection 2"
+              />
+              Selection Two
+            </label>
+
+            <label class="dropdown-option">
+              <input
+                type="checkbox"
+                name="dropdown-group"
+                value="Selection 3"
+              />
+              Selection Three
+            </label>
+
+            <label class="dropdown-option">
+              <input
+                type="checkbox"
+                name="dropdown-group"
+                value="Selection 4"
+              />
+              Selection Four
+            </label>
+
+            <label class="dropdown-option">
+              <input
+                type="checkbox"
+                name="dropdown-group"
+                value="Selection 5"
+              />
+              Selection Five
+            </label>
+          </div>
+        </div>
+      </div>
+
       <table class="content-table">
         <thead>
           <tr class="table_headings">
@@ -90,6 +202,8 @@ export default {
       select_all: false,
       selected: [],
       hideModal: false,
+      toggleClass: false,
+      toggleClassStatus: false,
     };
   },
 
@@ -113,8 +227,17 @@ export default {
     deleteRow(index) {
       this.data.splice(index, 1);
     },
+
     showUser() {
       this.hideModal = !this.hideModal;
+    },
+
+    showClass() {
+      this.toggleClass = !this.toggleClass;
+    },
+
+    showClassStatus() {
+      this.toggleClassStatus = !this.toggleClassStatus;
     },
 
     addResource(name, company, status, notes) {
@@ -211,6 +334,83 @@ button {
 button:hover,
 button:active {
   background-color: #48b3f5;
+}
+
+body {
+  background-color: blueviolet;
+}
+input {
+  outline: none;
+  border: none;
+}
+
+.flexbox {
+  display: flex;
+  gap: 25px;
+}
+
+a {
+  text-decoration: none;
+  color: #379937;
+}
+
+body {
+  margin: 40px;
+}
+
+.dropdown {
+  position: relative;
+  font-size: 14px;
+  color: #333;
+}
+.dropdown .dropdown-list {
+  padding: 12px;
+  background: #fff;
+  position: absolute;
+  top: 30px;
+  left: 2px;
+  right: 2px;
+  box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.15);
+  transform-origin: 50% 0;
+  transform: scale(1, 0);
+  transition: transform 0.15s ease-in-out 0.15s;
+  max-height: 66vh;
+  overflow-y: scroll;
+}
+.dropdown .dropdown-option {
+  display: block;
+  padding: 8px 12px;
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+}
+.dropdown .dropdown-label {
+  display: block;
+  height: 30px;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 6px 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+.dropdown .dropdown-label:before {
+  content: '▼';
+  float: right;
+}
+.dropdown.on .dropdown-list {
+  transform: scale(1, 1);
+  transition-delay: 0s;
+}
+.dropdown.on .dropdown-list .dropdown-option {
+  opacity: 1;
+  transition-delay: 0.2s;
+}
+.dropdown.on .dropdown-label:before {
+  content: '▲';
+}
+.dropdown [type='checkbox'] {
+  position: relative;
+  top: -1px;
+  margin-right: 4px;
 }
 
 @media (max-width: 768px) {

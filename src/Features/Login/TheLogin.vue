@@ -59,7 +59,7 @@
           <div class="inputBx">
             <p>
               Don't have an account ?
-              <router-link to="/register">Sign up</router-link>
+              <router-link to="/signUp">Sign up</router-link>
             </p>
           </div>
         </form>
@@ -346,7 +346,7 @@ section .contentBx .formBx .sci li img {
 .bi {
   float: right;
   margin-right: 16px;
-  margin-top: -35px;
+  margin-top: -28px;
   position: relative;
   z-index: 2;
   transform: scale(1.2);

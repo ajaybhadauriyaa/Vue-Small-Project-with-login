@@ -241,7 +241,7 @@ section .contentBx .formBx h3 {
 .bi {
   float: right;
   margin-right: 16px;
-  margin-top: -35px;
+  margin-top: -32px;
   position: relative;
   z-index: 2;
   transform: scale(1.2);
