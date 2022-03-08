@@ -1,6 +1,11 @@
 # work-project
+
+
 # install dependencies
 npm install
+
+# Run json-server
+To run use command json-server --watch db.json. It will run json-server which is used for login and SignUp functionality.
 
 # serve with hot reload at localhost:8080
 npm run serve
