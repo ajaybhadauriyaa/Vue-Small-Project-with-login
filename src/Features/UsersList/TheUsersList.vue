@@ -12,113 +12,51 @@
       </header>
 
       <div class="flexbox">
-        <div class="dropdown" data-control="checkbox-dropdown">
-          <label class="dropdown-label">Select</label>
+        <div
+          :class="toggleClass ? 'dropdown on' : 'dropdown'"
+          data-control="checkbox-dropdown"
+        >
+          <label @click="showClass" class="dropdown-label">Company</label>
 
           <div class="dropdown-list">
-            <a href="#" data-toggle="check-all" class="dropdown-option">
-              Check All
-            </a>
-
             <label class="dropdown-option">
               <input
                 type="checkbox"
                 name="dropdown-group"
-                value="Selection 1"
+                v-model="select_dropdown"
+                @click="dropdownSelectAll"
               />
-              Selection One
+              Select all
             </label>
 
-            <label class="dropdown-option">
+            <label
+              class="dropdown-option"
+              v-for="(d, index) in data"
+              :key="index"
+            >
               <input
                 type="checkbox"
                 name="dropdown-group"
-                value="Selection 2"
+                :value="d.id"
+                v-model="selectAllDrop"
               />
-              Selection Two
-            </label>
-
-            <label class="dropdown-option">
-              <input
-                type="checkbox"
-                name="dropdown-group"
-                value="Selection 3"
-              />
-              Selection Three
-            </label>
-
-            <label class="dropdown-option">
-              <input
-                type="checkbox"
-                name="dropdown-group"
-                value="Selection 4"
-              />
-              Selection Four
-            </label>
-
-            <label class="dropdown-option">
-              <input
-                type="checkbox"
-                name="dropdown-group"
-                value="Selection 5"
-              />
-              Selection Five
+              {{ d.company }}
             </label>
           </div>
         </div>
-        <div class="dropdown" data-control="checkbox-dropdown">
-          <label class="dropdown-label">Select</label>
 
-          <div class="dropdown-list">
-            <a href="#" data-toggle="check-all" class="dropdown-option">
-              Check All
-            </a>
-
-            <label class="dropdown-option">
-              <input
-                type="checkbox"
-                name="dropdown-group"
-                value="Selection 1"
-              />
-              Selection One
-            </label>
-
-            <label class="dropdown-option">
-              <input
-                type="checkbox"
-                name="dropdown-group"
-                value="Selection 2"
-              />
-              Selection Two
-            </label>
-
-            <label class="dropdown-option">
-              <input
-                type="checkbox"
-                name="dropdown-group"
-                value="Selection 3"
-              />
-              Selection Three
-            </label>
-
-            <label class="dropdown-option">
-              <input
-                type="checkbox"
-                name="dropdown-group"
-                value="Selection 4"
-              />
-              Selection Four
-            </label>
-
-            <label class="dropdown-option">
-              <input
-                type="checkbox"
-                name="dropdown-group"
-                value="Selection 5"
-              />
-              Selection Five
-            </label>
-          </div>
+        <div
+          :class="toggleClassStatus ? 'dropdown on' : 'dropdown'"
+          data-control="checkbox-dropdown"
+        >
+          <label
+            class="dropdown-label"
+            @click="
+              sortStatus();
+              showClassStatus();
+            "
+            >Status</label
+          >
         </div>
       </div>
 
@@ -204,6 +142,9 @@ export default {
       hideModal: false,
       toggleClass: false,
       toggleClassStatus: false,
+      status: [],
+      select_dropdown: false,
+      selectAllDrop: [],
     };
   },
 
@@ -224,6 +165,27 @@ export default {
       }
     },
 
+    dropdownSelectAll() {
+      this.selectAllDrop = [];
+      if (!this.select_dropdown) {
+        for (let i in this.data) {
+          this.selectAllDrop.push(this.data[i].id);
+        }
+      }
+    },
+
+    sortStatus() {
+      if (this.toggleClassStatus === false) {
+        this.data.sort((a, b) =>
+          a.status > b.status ? 1 : b.status > a.status ? -1 : 0
+        );
+      } else {
+        this.data.sort((a, b) =>
+          a.status < b.status ? 1 : b.status < a.status ? -1 : 0
+        );
+      }
+    },
+
     deleteRow(index) {
       this.data.splice(index, 1);
     },
@@ -234,10 +196,12 @@ export default {
 
     showClass() {
       this.toggleClass = !this.toggleClass;
+      this.toggleClassStatus = false;
     },
 
     showClassStatus() {
       this.toggleClassStatus = !this.toggleClassStatus;
+      this.toggleClass = false;
     },
 
     addResource(name, company, status, notes) {
@@ -251,6 +215,14 @@ export default {
       this.data.push(newResource);
       this.showUser();
     },
+  },
+
+  mounted() {
+    let user = localStorage.getItem('user-info');
+
+    if (!user) {
+      this.$router.push('/login');
+    }
   },
 };
 </script>
@@ -376,6 +348,7 @@ body {
   transition: transform 0.15s ease-in-out 0.15s;
   max-height: 66vh;
   overflow-y: scroll;
+  width: max-content;
 }
 .dropdown .dropdown-option {
   display: block;
@@ -392,6 +365,7 @@ body {
   line-height: 1;
   cursor: pointer;
 }
+
 .dropdown .dropdown-label:before {
   content: '▼';
   float: right;

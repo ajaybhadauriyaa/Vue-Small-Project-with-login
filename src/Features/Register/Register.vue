@@ -4,11 +4,24 @@
       <div class="formBx">
         <form @submit.prevent="submitData">
           <div class="inputBx">
-            <label for="user-name">Email</label>
+            <label for="user-name">Full Name</label>
             <input
               type="text"
               name="user-name"
-              id="user-name"
+              id="name"
+              v-model.trim="enteredName.val"
+              @blur="clearValidity('enteredName')"
+            />
+            <p v-if="!enteredName.isValid" id="warning">
+              Please Enter a Valid Name
+            </p>
+          </div>
+          <div class="inputBx">
+            <label for="user-name">Email</label>
+            <input
+              type="text"
+              name="email"
+              id="email"
               v-model.trim="enteredEmail.val"
               @blur="clearValidity('enteredEmail')"
             />
@@ -17,19 +30,36 @@
             </p>
           </div>
           <div class="inputBx">
-            <label for="user-password">Password</label>
+            <label for="password">Password</label>
             <span>
               <input
                 :type="ShowPassword"
                 maxlength="16"
-                name="user-password"
+                name="password"
                 id="user-password"
                 v-model.trim="enteredPassword.val"
+                @blur="clearValidity('enteredPassword')"
+              />
+            </span>
+
+            <p v-if="!enteredPassword.isValid" id="warning">
+              Password must not be empty
+            </p>
+          </div>
+          <div class="inputBx">
+            <label for="confirm-password">Confirm password</label>
+            <span>
+              <input
+                :type="ShowPassword"
+                maxlength="16"
+                name="confirm-password"
+                id="confirm-password"
+                v-model.trim="confirmPassword.val"
                 @blur="clearValidity('enteredPassword')" />
               <i class="bi" :class="toggleClass" @click="togglePassword"></i
             ></span>
 
-            <p v-if="!enteredPassword.isValid" id="warning">
+            <p v-if="!confirmPassword.isValid" id="warning">
               Password must not be empty
             </p>
           </div>
@@ -44,6 +74,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -55,8 +87,16 @@ export default {
         val: '',
         isValid: true,
       },
-      showPassword: false,
+      confirmPassword: {
+        val: '',
+        isValid: true,
+      },
+      enteredName: {
+        val: '',
+        isValid: true,
+      },
 
+      showPassword: false,
       rememberMe: [],
       inputIsInvalid: false,
       formIsValid: true,
@@ -96,24 +136,50 @@ export default {
         this.inputIsInvalid = true;
         this.formIsValid = false;
       }
+      if (
+        this.confirmPassword.val === '' ||
+        this.confirmPassword.val !== this.enteredPassword.val
+      ) {
+        this.confirmPassword.isValid = false;
+        this.inputIsInvalid = true;
+        this.formIsValid = false;
+      }
+      if (this.enteredName.val == '') {
+        this.enteredName.isValid = false;
+        this.inputIsInvalid = true;
+        this.formIsValid = false;
+      }
     },
 
-    submitData() {
+    async submitData() {
       this.validateForm();
 
       if (!this.formIsValid) {
         return;
       }
 
-      console.log(
-        this.enteredEmail.val,
-        this.enteredPassword.val,
-        this.rememberMe
-      );
+      let response = await axios.post('http://localhost:3000/users', {
+        email: this.enteredEmail.val,
+        password: this.confirmPassword.val,
+        name: this.enteredName.val,
+      });
+
+      if (response.status == 201) {
+        localStorage.setItem('user-info', JSON.stringify(response.data));
+        this.$router.push('/userslist');
+      }
     },
+
     confirmError() {
       this.inputIsInvalid = false;
     },
+  },
+  mounted() {
+    let user = localStorage.getItem('user-info');
+
+    if (user) {
+      this.$router.push('/usersList');
+    }
   },
 };
 </script>
@@ -134,21 +200,26 @@ section .contentBx {
   height: 100%;
 }
 
-.forgot-pass {
-  display: flex;
-}
-
 section .contentBx .formBx {
-  width: 25%;
-  height: 100%;
+  width: 50%;
+  height: auto;
+  margin-top: -100px;
+
+  border-radius: 40px;
+  box-shadow: 5px 5px 30px 7px rgba(0, 0, 0, 0.25),
+    -5px -5px 30px 7px rgba(0, 0, 0, 0.22);
 }
 
 section .contentBx .formBx form {
-  margin-top: 50px;
+  margin: 25px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 section .contentBx .formBx .inputBx {
   margin-bottom: 20px;
+  width: 50%;
 }
 
 section .contentBx .formBx .inputBx label {

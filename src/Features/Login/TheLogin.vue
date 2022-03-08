@@ -75,6 +75,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -129,22 +130,31 @@ export default {
       }
     },
 
-    submitData() {
+    async submitData() {
       this.validateForm();
 
       if (!this.formIsValid) {
         return;
       }
 
-      console.log(
-        this.enteredEmail.val,
-        this.enteredPassword.val,
-        this.rememberMe
+      let response = await axios.get(
+        `http://localhost:3000/users?email=${this.enteredEmail.val}&password=${this.enteredPassword.val}`
       );
+
+      if (response.status == 200 && response.data.length > 0) {
+        localStorage.setItem('user-info', JSON.stringify(response.data[0]));
+        this.$router.push('/usersList');
+      }
     },
     confirmError() {
       this.inputIsInvalid = false;
     },
+  },
+  mounted() {
+    let user = localStorage.getItem('user-info');
+    if (user) {
+      this.$router.push('/usersList');
+    }
   },
 };
 </script>
@@ -346,7 +356,7 @@ section .contentBx .formBx .sci li img {
 .bi {
   float: right;
   margin-right: 16px;
-  margin-top: -28px;
+  margin-top: -32px;
   position: relative;
   z-index: 2;
   transform: scale(1.2);
