@@ -33,6 +33,7 @@
               class="dropdown-option"
               v-for="(d, index) in data"
               :key="index"
+              @click="uncheckSelectAll"
             >
               <input
                 type="checkbox"
@@ -174,6 +175,10 @@ export default {
       }
     },
 
+    uncheckSelectAll() {
+      this.select_dropdown = false;
+    },
+
     sortStatus() {
       if (this.toggleClassStatus === false) {
         this.data.sort((a, b) =>
@@ -287,10 +292,6 @@ export default {
 
 .content-table tbody tr:nth-of-type(even) {
   background-color: #f3f3f3;
-}
-
-.content-table tbody tr:last-of-type {
-  border-bottom: 2px solid #009879;
 }
 
 button {
