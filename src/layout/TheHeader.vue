@@ -6,15 +6,37 @@
       </h1>
       <ul>
         <li>
-          <router-link to="/login">Login</router-link>
-        </li>
-        <li>
-          <router-link to="/signUp">Sign Up</router-link>
+          <a v-if="isLoggedIn" href="#" @click="logout">Logout</a>
         </li>
       </ul>
     </nav>
   </header>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      isLoggedIn: false,
+    };
+  },
+
+  methods: {
+    logout() {
+      localStorage.clear();
+      this.$router.push('/login');
+    },
+  },
+
+  mounted() {
+    let user = localStorage.getItem('user-info');
+
+    if (user) {
+      this.isLoggedIn = true;
+    }
+  },
+};
+</script>
 
 <style scoped>
 header {

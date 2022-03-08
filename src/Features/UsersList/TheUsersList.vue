@@ -10,6 +10,57 @@
           </button>
         </div>
       </header>
+
+      <div class="flexbox">
+        <div
+          :class="toggleClass ? 'dropdown on' : 'dropdown'"
+          data-control="checkbox-dropdown"
+        >
+          <label @click="showClass" class="dropdown-label">Company</label>
+
+          <div class="dropdown-list">
+            <label class="dropdown-option">
+              <input
+                type="checkbox"
+                name="dropdown-group"
+                v-model="select_dropdown"
+                @click="dropdownSelectAll"
+              />
+              Select all
+            </label>
+
+            <label
+              class="dropdown-option"
+              v-for="(d, index) in data"
+              :key="index"
+              @click="uncheckSelectAll"
+            >
+              <input
+                type="checkbox"
+                name="dropdown-group"
+                :value="d.id"
+                v-model="selectAllDrop"
+              />
+              {{ d.company }}
+            </label>
+          </div>
+        </div>
+
+        <div
+          :class="toggleClassStatus ? 'dropdown on' : 'dropdown'"
+          data-control="checkbox-dropdown"
+        >
+          <label
+            class="dropdown-label"
+            @click="
+              sortStatus();
+              showClassStatus();
+            "
+            >Status</label
+          >
+        </div>
+      </div>
+
       <table class="content-table">
         <thead>
           <tr class="table_headings">
@@ -90,6 +141,11 @@ export default {
       select_all: false,
       selected: [],
       hideModal: false,
+      toggleClass: false,
+      toggleClassStatus: false,
+      status: [],
+      select_dropdown: false,
+      selectAllDrop: [],
     };
   },
 
@@ -110,11 +166,47 @@ export default {
       }
     },
 
+    dropdownSelectAll() {
+      this.selectAllDrop = [];
+      if (!this.select_dropdown) {
+        for (let i in this.data) {
+          this.selectAllDrop.push(this.data[i].id);
+        }
+      }
+    },
+
+    uncheckSelectAll() {
+      this.select_dropdown = false;
+    },
+
+    sortStatus() {
+      if (this.toggleClassStatus === false) {
+        this.data.sort((a, b) =>
+          a.status > b.status ? 1 : b.status > a.status ? -1 : 0
+        );
+      } else {
+        this.data.sort((a, b) =>
+          a.status < b.status ? 1 : b.status < a.status ? -1 : 0
+        );
+      }
+    },
+
     deleteRow(index) {
       this.data.splice(index, 1);
     },
+
     showUser() {
       this.hideModal = !this.hideModal;
+    },
+
+    showClass() {
+      this.toggleClass = !this.toggleClass;
+      this.toggleClassStatus = false;
+    },
+
+    showClassStatus() {
+      this.toggleClassStatus = !this.toggleClassStatus;
+      this.toggleClass = false;
     },
 
     addResource(name, company, status, notes) {
@@ -128,6 +220,14 @@ export default {
       this.data.push(newResource);
       this.showUser();
     },
+  },
+
+  mounted() {
+    let user = localStorage.getItem('user-info');
+
+    if (!user) {
+      this.$router.push('/login');
+    }
   },
 };
 </script>
@@ -194,10 +294,6 @@ export default {
   background-color: #f3f3f3;
 }
 
-.content-table tbody tr:last-of-type {
-  border-bottom: 2px solid #009879;
-}
-
 button {
   padding: 0.5rem 1.5rem;
   font-family: inherit;
@@ -211,6 +307,85 @@ button {
 button:hover,
 button:active {
   background-color: #48b3f5;
+}
+
+body {
+  background-color: blueviolet;
+}
+input {
+  outline: none;
+  border: none;
+}
+
+.flexbox {
+  display: flex;
+  gap: 25px;
+}
+
+a {
+  text-decoration: none;
+  color: #379937;
+}
+
+body {
+  margin: 40px;
+}
+
+.dropdown {
+  position: relative;
+  font-size: 14px;
+  color: #333;
+}
+.dropdown .dropdown-list {
+  padding: 12px;
+  background: #fff;
+  position: absolute;
+  top: 30px;
+  left: 2px;
+  right: 2px;
+  box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.15);
+  transform-origin: 50% 0;
+  transform: scale(1, 0);
+  transition: transform 0.15s ease-in-out 0.15s;
+  max-height: 66vh;
+  overflow-y: scroll;
+  width: max-content;
+}
+.dropdown .dropdown-option {
+  display: block;
+  padding: 8px 12px;
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+}
+.dropdown .dropdown-label {
+  display: block;
+  height: 30px;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 6px 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.dropdown .dropdown-label:before {
+  content: '▼';
+  float: right;
+}
+.dropdown.on .dropdown-list {
+  transform: scale(1, 1);
+  transition-delay: 0s;
+}
+.dropdown.on .dropdown-list .dropdown-option {
+  opacity: 1;
+  transition-delay: 0.2s;
+}
+.dropdown.on .dropdown-label:before {
+  content: '▲';
+}
+.dropdown [type='checkbox'] {
+  position: relative;
+  top: -1px;
+  margin-right: 4px;
 }
 
 @media (max-width: 768px) {
